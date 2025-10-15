@@ -2,54 +2,80 @@ package com.example;
 
 import java.util.Scanner;
 
+/**
+ * TicTacToeConsole - A simple console-based Tic Tac Toe game.
+ * Demonstrates core programming concepts such as:
+ * - 2D array usage
+ * - control flow (loops & conditions)
+ * - user input with Scanner
+ * - separation of logic from UI (text-based interface)
+ */
 public class TicTacToeConsole {
 
-    private static char[][] board = {
-        {' ', ' ', ' '},
-        {' ', ' ', ' '},
-        {' ', ' ', ' '}
-    };
-    
-    private static char currentPlayer = 'X';
-    // public static void main(String[] args) {
-    //     Scanner scanner = new Scanner(System.in);
-    //     boolean gameEnded = false;
+    private char[][] board; // 3x3 game board
+    private char currentPlayer; // 'X' or 'O'
+    private boolean gameOver; // true when game ends
+    private Scanner scanner; // for reading user input
 
-    //     System.out.println("Welcome to TicTacToe (Control Version)");
-    //     printBoard();
+    /**
+     * Constructor initializes the board and player.
+     */
+    public TicTacToeConsole() {
+        board = new char[3][3];
+        currentPlayer = 'X';
+        gameOver = false;
+        scanner = new Scanner(System.in);
 
-    //     while (!gameEnded) {
-    //         System.out.println("Player " + currentPlayer + ", enter your move (row and column: 0, 1, or 2):");
-    //         int row = scanner.nextInt();
-    //         int col = scanner.nextInt();
+        // Initialize empty board
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                board[i][j] = ' ';
+            }
+        }
+    }
 
-    //         if (row < 0 || row > 2 || col < 0 || col > 2) {
-    //             System.out.println("Invalid position! Try again.");
-    //             continue;
-    //         }
+    /**
+     * Starts the console-based game loop.
+     */
+    public void play() {
+        System.out.println("Welcome to Tic Tac Toe (Console Version)!");
+        printBoard();
 
-    //         if (board[row][col] != ' ') {
-    //             System.out.println("Cell already taken! Try again.");
-    //             continue;
-    //         }
+        while (!gameOver) {
+            System.out.println("Player " + currentPlayer + ", enter your move (row and column: 1-3): ");
+            int row = scanner.nextInt() - 1;
+            int col = scanner.nextInt() - 1;
 
-    //         board[row][col] = currentPlayer;
-    //         printBoard();
+            // Validate move
+            if (row < 0 || row >= 3 || col < 0 || col >= 3 || board[row][col] != ' ') {
+                System.out.println("Invalid move! Try again.");
+                continue;
+            }
 
-    //         if (hasWon(currentPlayer)) {
-    //             System.out.println("Player " + currentPlayer + " won the game!");
-    //             gameEnded = true;
-    //         } else if (isDraw()) {
-    //             System.out.println("Game is draw!!");
-    //             gameEnded = true;
-    //         } else {
-    //             currentPlayer = (currentPlayer == 'X') ? 'O' :'X';
-    //         }
-    //     }
-    //     scanner.close();
-    // }
+            // Make move
+            board[row][col] = currentPlayer;
+            printBoard();
 
-    private static void printBoard() {
+            // Check for win or draw
+            if (checkWin()) {
+                System.out.println("🎉 Player " + currentPlayer + " wins!");
+                gameOver = true;
+            } else if (isDraw()) {
+                System.out.println("🤝 It's a draw!");
+                gameOver = true;
+            } else {
+                // Switch players
+                currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+            }
+        }
+
+        System.out.println("Game Over!");
+    }
+
+    /**
+     * Prints the current board state in a grid format.
+     */
+    private void printBoard() {
         System.out.println("-------------");
         for (int i = 0; i < 3; i++) {
             System.out.print("| ");
@@ -61,19 +87,26 @@ public class TicTacToeConsole {
         }
     }
 
-    private static boolean hasWon(char player) {
+    /**
+     * Checks all rows, columns, and diagonals for a win.
+     */
+    private boolean checkWin() {
         for (int i = 0; i < 3; i++) {
-            if ((board[i][0] == player && board[i][1] == player && board[i][2] == player) ||
-                (board[0][i] == player && board[1][i] == player && board[2][i] == player)) {
+            // Check rows and columns
+            if ((board[i][0] == currentPlayer && board[i][1] == currentPlayer && board[i][2] == currentPlayer) ||
+                (board[0][i] == currentPlayer && board[1][i] == currentPlayer && board[2][i] == currentPlayer)) {
                 return true;
             }
         }
-
-        return ((board[0][0] == player && board[1][1] == player && board[2][2] == player) ||
-                (board[0][2] == player && board[1][1] == player && board[2][0] == player)) ;
+        // Check diagonals
+        return (board[0][0] == currentPlayer && board[1][1] == currentPlayer && board[2][2] == currentPlayer) ||
+               (board[0][2] == currentPlayer && board[1][1] == currentPlayer && board[2][0] == currentPlayer);
     }
 
-    private static boolean isDraw() {
+    /**
+     * Returns true if all cells are filled and there’s no winner.
+     */
+    private boolean isDraw() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (board[i][j] == ' ') return false;
@@ -81,4 +114,20 @@ public class TicTacToeConsole {
         }
         return true;
     }
+
+    /**
+     * Static main method — allows standalone console execution.
+     */
+    public static void main(String[] args) {
+        TicTacToeConsole game = new TicTacToeConsole();
+        game.play();
+    }
 }
+
+/* Concepts Demonstrated:
+Encapsulation: Game state (board, current player, gameOver) is private to the class.
+Control Structures: Nested loops for board traversal, if/else for validation and win checks.
+User Input Handling: Uses Scanner for console-based input with validation logic.
+Method Decomposition: Each function (checkWin, isDraw, printBoard) has a clear, single responsibility.
+Reusability: The main logic (rules, win conditions) could be reused for GUI by separating model and view.
+*/
